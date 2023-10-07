@@ -1,0 +1,1 @@
+GET https://newsdata.io/api/1/news?country=ve&category=technology&size=10&apikey=pub_30576db04f4d80bec8cd531ff85431bb1f9c5
