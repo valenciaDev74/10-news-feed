@@ -59,12 +59,12 @@ async function showArticles () {
                     `
 
     articlesContainer.appendChild(div)
-  })
 
-  const button = document.querySelector('.save-button')
+    const button = div.querySelector('.save-button')
 
-  button.addEventListener('click', () => {
-    toggleButtonIcon(button)
+    button.addEventListener('click', () => {
+      toggleButtonIcon(button)
+    })
   })
 }
 
