@@ -3,8 +3,8 @@ const API_KEY = 'pub_30576db04f4d80bec8cd531ff85431bb1f9c5'
 const $ = elem => document.querySelector(elem)
 
 let articlesData = sessionStorage.getItem('articles')
-const savedArticles = []
-localStorage.setItem('savedArticles', '')
+const savedArticles = JSON.parse(localStorage.getItem('savedArticles')) || []
+
 const icon = '<img src="./img/svg/bookmark-regular.svg">'
 const iconFilled = '<img src="./img/svg/bookmark-solid.svg">'
 
@@ -51,6 +51,7 @@ async function showArticles () {
   articles.results.forEach(article => {
     const div = document.createElement('article')
     const isSaved = savedArticles.find(a => a.title === article.title)
+
     let currentIcon = icon
     if (isSaved) {
       currentIcon = iconFilled
@@ -86,7 +87,6 @@ function getArticleData (button) {
   const article = button.closest('article')
   return {
     source: article.querySelector('h3').textContent,
-    date: article.querySelector('p').textContent,
     title: article.querySelector('h2').textContent,
     description: article.querySelector('.description').textContent,
     link: article.querySelector('a').href
@@ -148,7 +148,6 @@ function addSavedArticles () {
 
       div.innerHTML = `<div class="info">
                         <h3>${article.source}</h3>
-                        <p class="date">${article.date}</p>
                       </div>
                       <h2>${article.title}</h2>
                       <p class="description">${article.description}</p>
@@ -164,11 +163,14 @@ function addSavedArticles () {
 
       button.addEventListener('click', () => {
         const article = button.closest('article')
+        const title = article.querySelector('h2').textContent
+
+        const index = savedArticles.findIndex(a => a.title === title)
+        savedArticles.splice(index, 1)
+
+        localStorage.setItem('savedArticles', JSON.stringify(savedArticles))
         article.remove()
       })
-
-      // esto da problemas
-      // handleSaveButton()
     })
   }
 }

@@ -10,7 +10,7 @@
   --secondary-bg: rgba(216, 27, 96, 0.08);
   --secondary-bg-hover: rgba(216, 27, 96, 0.2);
 
-  --text: rgba(231, 228, 229);
+  --text: rgb(231, 228, 229);
   --sub-text: rgba(231, 228, 229, 0.7);
 }
 
@@ -70,7 +70,7 @@ html {
 .controls {
   width: 100%;
   display: flex;
-  padding: 1.6rem;
+  padding: 1.6rem 0;
 
   justify-content: flex-end;
 }
@@ -159,7 +159,15 @@ html {
 
 .saved-section__controls {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 1.6rem;
+}
+
+.saved-section__controls h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
 }
 
 .saved-active {
@@ -171,4 +179,9 @@ html {
   flex-direction: column;
   gap: 1.6rem;
   padding: 1.6rem;
+  overflow-y: scroll;
+}
+
+.saved-section__main::-webkit-scrollbar {
+  display: none;
 }
