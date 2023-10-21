@@ -2,6 +2,9 @@ const API_KEY = 'pub_30576db04f4d80bec8cd531ff85431bb1f9c5'
 
 const $ = elem => document.querySelector(elem)
 
+let articlesData = sessionStorage.getItem('articles')
+const savedArticles = []
+localStorage.setItem('savedArticles', '')
 const icon = '<img src="./img/svg/bookmark-regular.svg">'
 const iconFilled = '<img src="./img/svg/bookmark-solid.svg">'
 
@@ -32,17 +35,26 @@ function toggleButtonIcon (button) {
 
 // Render functions
 async function getArticles () {
-  const response = await fetch(`https://newsdata.io/api/1/news?country=ve&category=technology&size=10&apikey=${API_KEY}`)
-  const data = await response.json()
-  return data
+  if (!articlesData) {
+    const response = await fetch(`https://newsdata.io/api/1/news?country=ve&category=technology&size=10&apikey=${API_KEY}`)
+    articlesData = await response.json()
+    localStorage.setItem('articles', JSON.stringify(articlesData))
+  }
+  return articlesData
 }
 
 async function showArticles () {
   const articles = await getArticles()
   const articlesContainer = $('#news')
+  articlesContainer.innerHTML = ''
 
   articles.results.forEach(article => {
     const div = document.createElement('article')
+    const isSaved = savedArticles.find(a => a.title === article.title)
+    let currentIcon = icon
+    if (isSaved) {
+      currentIcon = iconFilled
+    }
 
     div.classList.add('news-card')
 
@@ -53,8 +65,8 @@ async function showArticles () {
                     <h2>${article.title}</h2>
                     <p class="description">${article.description.slice(0, 170) + '...'}</p>
                     <div class="buttons-container">
-                      <a href="${article.link}" role="button">Leer más</a>
-                      <button role="button" class="save-button">${icon}</button>
+                      <a target="_blank" href="${article.link}" role="button">Leer más</a>
+                      <button role="button" class="save-button button">${currentIcon}</button>
                     </div>
                     `
 
@@ -66,6 +78,100 @@ async function showArticles () {
       toggleButtonIcon(button)
     })
   })
+
+  handleSaveButton()
+}
+
+function getArticleData (button) {
+  const article = button.closest('article')
+  return {
+    source: article.querySelector('h3').textContent,
+    date: article.querySelector('p').textContent,
+    title: article.querySelector('h2').textContent,
+    description: article.querySelector('.description').textContent,
+    link: article.querySelector('a').href
+  }
+}
+
+function handleSaveButton () {
+  const saveButtons = document.querySelectorAll('.save-button')
+
+  saveButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const articleData = getArticleData(button)
+
+      const index = savedArticles.findIndex(a => a.title === articleData.title)
+
+      if (index > -1) {
+        savedArticles.splice(index, 1)
+      } else {
+        savedArticles.push(articleData)
+      }
+
+      const savedArticlesJSON = JSON.stringify(savedArticles)
+
+      localStorage.setItem('savedArticles', savedArticlesJSON)
+    })
+  })
+}
+
+// Saved section
+function handleSavedSectionButton () {
+  const savedSectionButton = $('#saved-button')
+  const savedSectionBackButton = $('#back-button')
+  const savedSection = $('#saved-section')
+
+  savedSectionButton.addEventListener('click', () => {
+    savedSection.classList.add('saved-active')
+    addSavedArticles()
+  })
+
+  savedSectionBackButton.addEventListener('click', () => {
+    savedSection.classList.remove('saved-active')
+
+    showArticles()
+  })
+}
+
+function addSavedArticles () {
+  let articles = localStorage.getItem('savedArticles')
+
+  const mainSection = $('#saved-news')
+  mainSection.innerHTML = ''
+
+  if (articles) {
+    articles = JSON.parse(articles)
+    articles.forEach(article => {
+      const div = document.createElement('article')
+
+      div.classList.add('news-card')
+
+      div.innerHTML = `<div class="info">
+                        <h3>${article.source}</h3>
+                        <p class="date">${article.date}</p>
+                      </div>
+                      <h2>${article.title}</h2>
+                      <p class="description">${article.description}</p>
+                      <div class="buttons-container">
+                        <a target="_blank" href="${article.link}" role="button">Leer más</a>
+                        <button role="button" class="save-button button">${iconFilled}</button>
+                      </div>
+                      `
+
+      mainSection.appendChild(div)
+
+      const button = div.querySelector('.save-button')
+
+      button.addEventListener('click', () => {
+        const article = button.closest('article')
+        article.remove()
+      })
+
+      // esto da problemas
+      // handleSaveButton()
+    })
+  }
 }
 
 showArticles()
+handleSavedSectionButton()
