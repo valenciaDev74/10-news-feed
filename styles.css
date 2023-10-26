@@ -159,15 +159,22 @@ html {
 
 .saved-section__controls {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: space-between;
   padding: 1.6rem;
+}
+
+.saved-section__controls button {
+  position: absolute;
 }
 
 .saved-section__controls h2 {
   display: inline-flex;
   align-items: center;
   gap: .3rem;
+
+  margin: auto;
 }
 
 .saved-active {
@@ -184,4 +191,30 @@ html {
 
 .saved-section__main::-webkit-scrollbar {
   display: none;
+}
+
+@media screen and (max-width: 700px) {
+  :root {}
+
+  .main-section {
+    width: auto;
+    margin: auto 1rem
+  }
+
+  .saved-section {
+    width: 100%
+  }
+
+  .saved-section__main {
+    padding: 1rem;
+  }
+
+  .saved-section__controls button {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .saved-section__controls {
+    flex-wrap: wrap;
+  }
 }
